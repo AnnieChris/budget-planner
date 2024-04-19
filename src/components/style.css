@@ -4,5 +4,12 @@
 }
 .row{
     padding: 20px;
-
+}
+.list-group-item{
+    gap: 20px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    text-transform: capitalize;
+    flex-flow: wrap;
 }

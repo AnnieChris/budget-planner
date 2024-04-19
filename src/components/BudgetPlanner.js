@@ -11,6 +11,7 @@ function BudgetPlanner() {
     const [editedAmount, setEditedAmount] = useState('');
     const [editIndex, setEditIndex] = useState(null);
     const [chartKey, setChartKey] = useState(0);
+    const [prevExpense, setPrevExpense] = useState(null);
 
     const handleExpenseChange = (e) => {
         setInputExpense(e.target.value);
@@ -43,12 +44,23 @@ function BudgetPlanner() {
             setChartKey(prevKey => prevKey + 1);
         }
     };
-
     const deleteExpense = (index) => {
         const newExpenses = [...expenses];
         newExpenses.splice(index, 1);
         setExpenses(newExpenses);
         setChartKey(prevKey => prevKey + 1);
+    };
+    const cancelExpenses = () => {
+        if (prevExpense && editIndex !== null) {
+            const updatedExpenses = [...expenses];
+            updatedExpenses[editIndex] = { expense: prevExpense.expense, amount: prevExpense.amount };
+            setExpenses(updatedExpenses);
+        }
+
+        // Reset states
+        setEditedExpense('');
+        setEditedAmount('');
+        setEditIndex(null);
     };
 
     const totalExpenses = expenses.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
@@ -96,14 +108,15 @@ function BudgetPlanner() {
                     <Button variant="primary" onClick={addExpense}>Add Expense</Button>
                 </Col>
             </Row>
-            <Row>
-                <Col>
+            <Row className="justify-content-md-center">
+                <Col sm={8}>
                 <h2>Expenses</h2>
                     <ListGroup>
                         {expenses.map((expense, index) => (
                             <ListGroup.Item key={index}>
                                 {index === editIndex ? (
                                     <>
+                                    {expense.expense} - ${expense.amount}
                                         <Form.Control
                                             type="text"
                                             placeholder="Expense"
@@ -117,6 +130,8 @@ function BudgetPlanner() {
                                             onChange={(e) => setEditedAmount(e.target.value)}
                                         />
                                         <Button variant="success" onClick={() => editExpense(index)}>Save</Button>
+                                        <Button variant="warning" onClick={cancelExpenses} >Cancel</Button>
+                                        
                                     </>
                                 ) : (
                                     <>
@@ -133,6 +148,7 @@ function BudgetPlanner() {
             <Row>
                 <Col>
                     <h2>Total Expenses: ${totalExpenses}</h2>
+                    {/* {isNaN(balance) || balance < 0 ? null : <h2>Balance : $ {balance}</h2>} */}
                     {isNaN(balance) ? null : <h2>Balance : $ {balance}</h2>}
                 </Col>
             </Row>
